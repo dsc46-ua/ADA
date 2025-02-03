@@ -1,8 +1,4 @@
-/*
-DANIEL SEGURADO CLIMENT 48791680D
-ADA 2023-24
-Práctica 1: "Empirical analysis of Quicksort average-time complexity."
-*/
+//DANIEL SEGURADO CLIMENT 48791680D
 
 #include <unistd.h>
 #include <iostream>
@@ -12,8 +8,7 @@ using namespace std;
 
 //--------------------------------------------------------------
 // Middle QuickSort
-void 
-middle_QuickSort(int * v, long left, long right){
+void middle_QuickSort(int * v, long left, long right){
 
     long i,j;
     int pivot,aux; 
