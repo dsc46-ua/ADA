@@ -28,17 +28,15 @@ set fit limit 1e-6
 #fitFunction="Fitting quickSort time values to f(n) = n+k"
 #fit y(x) "quickSort.CPUtimes" using 1:2 via a,b
 
-
 ##Fit to a (n log n + k) function: 
-#y(x)=a*x*log(x) + b 
-#fitFunction="Fitting quickSort time values to f(n) = n log(n)+k"
-#fit y(x) "quickSort.CPUtimes" using 1:2 via a,b
+y(x)=a*x*log(x) + b 
+fitFunction="Fitting quickSort time values to f(n) = n log(n)+k"
+fit y(x) "quickSort.CPUtimes" using 1:2 via a,b
 
-
-##Fit to a cuadratic function: 
-y(x)=a*x*x + b*x + c
-fitFunction="Fitting quickSort time values to f(n) = n²+n+k"
-fit y(x) "quickSort.CPUtimes" using 1:2 via a,b,c
+##Fit to a (n log n + n) function: 
+#y(x)=a*x*log(x) + b*x + c
+#fitFunction="Fitting quickSort time values to f(n) = n log(n) + n + k"
+#fit y(x) "quickSort.CPUtimes" using 1:2 via a,b,c
 
 #------------------------------------------------------------------------
 
