@@ -7,6 +7,7 @@ Práctica 1: "Empirical analysis of Quicksort average-time complexity."
 #include <unistd.h>
 #include <iostream>
 #include <math.h>
+#include <ctime>
 
 using namespace std;
 
@@ -40,7 +41,6 @@ int main(void){
 //Objetivos: Que lo ejecute 30 veces y haga la media / Que el left y el right funcionen 
 
     srand(0);
-    int suma = 0;
     cout << "# QuickSort CPU times in milliseconds:"
         << endl
         << "# Size \t CPU time (ms.)"
@@ -48,7 +48,6 @@ int main(void){
         << "# ----------------------------"
         << endl;
   
-
     for (int exp = 15; exp <= 20; exp++){
         size_t size = size_t( pow(2,exp) );
 
@@ -59,6 +58,7 @@ int main(void){
         }
 
         cout << size << "\t\t" << std::flush;
+        double suma = 0.0;
     
         for(int x = 0; x < 30; x++){
             for (size_t j = 0; j < size; j++) 
@@ -69,8 +69,8 @@ int main(void){
             auto end = clock();
             suma += (end-start);
         }
-        suma = suma/30;
-        cout << 1000.0 * (suma) / CLOCKS_PER_SEC  << endl;
+        double media = suma / 30.0;
+        cout << 1000.0 * media / CLOCKS_PER_SEC  << endl;
 
         for (size_t i = 1; i < size; i++)
             if (v[i] < v[i-1]){ 
