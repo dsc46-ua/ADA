@@ -50,7 +50,7 @@ plot "qs-vs-hs.Msteps" using 1:3 with lines title "Random Arrays", \
 #####################################################################################
 # QuickSort versus HeapSort (random arrays)
 set terminal png
-set output "qs-vs-hs-ra.png"
+set output "qs-vs-hs-RA.png"
 
 set xlabel "Array size"
 set ylabel "Millions of program steps"
@@ -65,7 +65,7 @@ plot "qs-vs-hs.Msteps" using 1:2 with lines title "QuickSort", \
 #################################################################################
 # QuickSort versus HeapSort (sorted arrays)
 set terminal png
-set output "qs-vs-hs-sa.png"
+set output "qs-vs-hs-SA.png"
 
 set xlabel "Array size"
 set ylabel "Millions of program steps"
@@ -80,7 +80,7 @@ plot "qs-vs-hs.Msteps" using 1:4 with lines title "QuickSort", \
 ###############################################################################
 # QuickSort versus HeapSort (reverse-sorted arrays)
 set terminal png
-set output "qs-vs-hs-rsa.png"
+set output "qs-vs-hs-RSA.png"
 
 set xlabel "Array size"
 set ylabel "Millions of program steps"
