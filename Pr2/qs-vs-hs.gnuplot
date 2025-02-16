@@ -1,0 +1,94 @@
+#DANIEL SEGURADO CLIMENT 48791680D
+
+# Ajustes por mínimos cuadrados 
+#####################################################################
+f_random(x) = a_random * x + b_random
+fit f_random(x) "qs-vs-hs.Msteps" using 1:2 via a_random, b_random
+
+f_sorted(x) = a_sorted * x + b_sorted
+fit f_sorted(x) "qs-vs-hs.Msteps" using 1:4 via a_sorted, b_sorted
+
+f_reverse_sorted(x) = a_reverse_sorted * x + b_reverse_sorted
+fit f_reverse_sorted(x) "qs-vs-hs.Msteps" using 1:6 via a_reverse_sorted, b_reverse_sorted
+
+g_random(x) = c_random * x + d_random
+fit g_random(x) "qs-vs-hs.Msteps" using 1:3 via c_random, d_random
+
+g_sorted(x) = c_sorted * x + d_sorted
+fit g_sorted(x) "qs-vs-hs.Msteps" using 1:5 via c_sorted, d_sorted
+
+g_reverse_sorted(x) = c_reverse_sorted * x + d_reverse_sorted
+fit g_reverse_sorted(x) "qs-vs-hs.Msteps" using 1:7 via c_reverse_sorted, d_reverse_sorted
+#####################################################################
+
+
+# QuickSort
+set terminal png
+set output "quickSort.png"
+
+set xlabel "Array size"
+set ylabel "Millions of program steps"
+
+set title "QuickSort"
+
+plot "qs-vs-hs.Msteps" using 1:2 with lines title "Random Arrays", \
+     "qs-vs-hs.Msteps" using 1:4 with lines title "Sorted Arrays", \
+     "qs-vs-hs.Msteps" using 1:6 with lines title "Reverse Sorted Arrays"
+##################################################################################
+# HeapSort
+set terminal png
+set output "heapSort.png"
+
+set xlabel "Array size"
+set ylabel "Millions of program steps"
+
+set title "HeapSort"
+
+plot "qs-vs-hs.Msteps" using 1:3 with lines title "Random Arrays", \
+     "qs-vs-hs.Msteps" using 1:5 with lines title "Sorted Arrays", \
+     "qs-vs-hs.Msteps" using 1:7 with lines title "Reverse Sorted Arrays"
+#####################################################################################
+# QuickSort versus HeapSort (random arrays)
+set terminal png
+set output "qs-vs-hs-ra.png"
+
+set xlabel "Array size"
+set ylabel "Millions of program steps"
+
+set title "QuickSort versus HeapSort (random arrays)"
+
+plot "qs-vs-hs.Msteps" using 1:2 with lines title "QuickSort", \
+     "qs-vs-hs.Msteps" using 1:3 with lines title "HeapSort", \
+     \
+     f_random(x) with lines title "fitting QuickSort time values to ...", \
+     g_random(x) with lines title "fitting HeapSort time values to ..."
+#################################################################################
+# QuickSort versus HeapSort (sorted arrays)
+set terminal png
+set output "qs-vs-hs-sa.png"
+
+set xlabel "Array size"
+set ylabel "Millions of program steps"
+
+set title "QuickSort versus HeapSort (sorted arrays)"
+
+plot "qs-vs-hs.Msteps" using 1:4 with lines title "QuickSort", \
+     "qs-vs-hs.Msteps" using 1:5 with lines title "HeapSort", \
+     \
+     f_sorted(x) with lines title "fitting QuickSort time values to ...", \
+     g_sorted(x) with lines title "fitting HeapSort time values to ..."
+###############################################################################
+# QuickSort versus HeapSort (reverse-sorted arrays)
+set terminal png
+set output "qs-vs-hs-rsa.png"
+
+set xlabel "Array size"
+set ylabel "Millions of program steps"
+
+set title "QuickSort versus HeapSort (reverse-sorted arrays)"
+
+plot "qs-vs-hs.Msteps" using 1:6 with lines title "QuickSort", \
+     "qs-vs-hs.Msteps" using 1:7 with lines title " HeapSort", \
+     \
+     f_reverse_sorted(x) with lines title "fitting QuickSort time values to ...", \
+     g_reverse_sorted(x) with lines title "fitting HeapSort time values to ..."
