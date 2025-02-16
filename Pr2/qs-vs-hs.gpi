@@ -11,13 +11,13 @@ fit f_sorted(x) "qs-vs-hs.Msteps" using 1:4 via a_sorted, b_sorted
 f_reverse_sorted(x) = a_reverse_sorted * x + b_reverse_sorted
 fit f_reverse_sorted(x) "qs-vs-hs.Msteps" using 1:6 via a_reverse_sorted, b_reverse_sorted
 
-g_random(x) = c_random * x + d_random
+g_random(x) = c_random * x * log(x) + d_random
 fit g_random(x) "qs-vs-hs.Msteps" using 1:3 via c_random, d_random
 
-g_sorted(x) = c_sorted * x + d_sorted
+g_sorted(x) = c_sorted * x * log(x) + d_sorted
 fit g_sorted(x) "qs-vs-hs.Msteps" using 1:5 via c_sorted, d_sorted
 
-g_reverse_sorted(x) = c_reverse_sorted * x + d_reverse_sorted
+g_reverse_sorted(x) = c_reverse_sorted * x * log(x) + d_reverse_sorted
 fit g_reverse_sorted(x) "qs-vs-hs.Msteps" using 1:7 via c_reverse_sorted, d_reverse_sorted
 #####################################################################
 
