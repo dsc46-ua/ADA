@@ -11,13 +11,11 @@
 #include <algorithm>
 #include <cstdlib>
 #include <map>
-
 using namespace std;
 
 struct nodo {
     int x, y;
 };
-
 //Variable enum para direcciones
 enum StepEnum { N_enum = 1, NE_enum, E_enum, SE_enum, S_enum, SW_enum, W_enum, NW_enum };
 //Variables globales
@@ -27,13 +25,13 @@ vector<nodo> camino; //Camino actual
 vector<nodo> mejorCamino; //Mejor camino
 int difMinima = INT_MAX; //Valor incial de mejor camino
 //Estadísticas
-long long nvisit = 0;
-long long nexplored = 0;
-long long nleaf = 0;
-long long nunfeasible = 0;
-long long nnot_promising = 0;
+long long nvisitados = 0;
+long long nExplorados = 0;
+long long nHoja = 0;
+long long notFeasible = 0;
+long long notPromising = 0;
 
-vector<vector<bool>> visitado_grid;
+vector<vector<bool>> visitadoGrid;
 map<StepEnum, tuple<int, int>> steps_inc_map;
 vector<StepEnum> direcciones; 
 
@@ -56,12 +54,12 @@ void ordenDirecciones() {
 }
 
 //Verifica si una posición es válida
-bool is_valid(int r, int c) {
+bool isValid(int r, int c) {
     return (r >= 0 && r < n && c >= 0 && c < m && mapa[r][c] == 1);
 }
 
 //Verifica si hemos llegado al destino
-bool is_destination(int r, int c) {
+bool isDestination(int r, int c) {
     return (r == n - 1 && c == m - 1);
 }
 
@@ -71,20 +69,20 @@ int chebyshev(int r1, int c1, int r2, int c2) {
 }
 
 //Función principal de backtracking
-void maze_bt(nodo nodoActual, int current_len) {
-    nvisit++;
+void maze_bt(nodo nActual, int actual) {
+    nvisitados++;
 
-    if (is_destination(nodoActual.x, nodoActual.y)) {
-        nleaf++;
-        if (current_len < difMinima) {
-            difMinima = current_len;
+    if (isDestination(nActual.x, nActual.y)) {
+        nHoja++;
+        if (actual < difMinima) {
+            difMinima = actual;
             mejorCamino = camino;
         }
         return;
     }
 
     //Si el camino actual es mayor que la mejor solución encontrada, no seguimos
-    if (current_len >= difMinima) {
+    if (actual >= difMinima) {
         return;
     }
 
@@ -94,31 +92,31 @@ void maze_bt(nodo nodoActual, int current_len) {
         //Extreamos los valores de la tupla como se muestra en iteracio.cc
         tie(incx, incy) = steps_inc_map.at(step_to_try);
 
-        int next_x = nodoActual.x + incx;
-        int next_y = nodoActual.y + incy;
+        int next_x = nActual.x + incx;
+        int next_y = nActual.y + incy;
 
-        bool feasible = is_valid(next_x, next_y) && !visitado_grid[next_x][next_y];
+        bool isFeasible = isValid(next_x, next_y) && !visitadoGrid[next_x][next_y];
 
-        if (feasible) {
-            int path_len_to_next_node = current_len + 1;
-            int heuristic_val = chebyshev(next_x, next_y, n - 1, m - 1);
-            bool promising = (path_len_to_next_node + heuristic_val) < difMinima;
+        if (isFeasible) {
+            int caminoHastaSiguienteNodo = actual + 1;
+            int heuristica = chebyshev(next_x, next_y, n - 1, m - 1);
+            bool isPromising = (caminoHastaSiguienteNodo + heuristica) < difMinima;
 
-            if (promising) {
-                nexplored++;
+            if (isPromising) {
+                nExplorados++;
 
-                visitado_grid[next_x][next_y] = true;
+                visitadoGrid[next_x][next_y] = true;
                 camino.push_back({next_x, next_y});
 
-                maze_bt({next_x, next_y}, path_len_to_next_node);
+                maze_bt({next_x, next_y}, caminoHastaSiguienteNodo);
 
                 camino.pop_back();
-                visitado_grid[next_x][next_y] = false;
+                visitadoGrid[next_x][next_y] = false;
             } else {
-                nnot_promising++;
+                notPromising++;
             }
         } else {
-            nunfeasible++;
+            notFeasible++;
         }
     }
 }
@@ -196,12 +194,12 @@ int main(int argc, char* argv[]) {
     }
 
     string archivoEntrada;
-    bool print_2D = false, print_coded = false;
+    bool print2D = false, printCoded = false;
 
-    bool file_option_found = false;
+    bool archivoEncontrado = false;
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-f") == 0) {
-            file_option_found = true;
+            archivoEncontrado = true;
             if (i + 1 < argc) {
                 archivoEntrada = argv[++i];
             } else {
@@ -210,9 +208,9 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
         } else if (strcmp(argv[i], "-p") == 0) {
-            print_coded = true;
+            printCoded = true;
         } else if (strcmp(argv[i], "--p2D") == 0) {
-            print_2D = true;
+            print2D = true;
         } else {
             cerr << "ERROR: unknown option " << argv[i] << endl;
             cerr << "Usage: " << endl << " maze_bt [ -p] [ --p2D] -f file" << endl;
@@ -220,7 +218,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    if (!file_option_found || archivoEntrada.empty()) {
+    if (!archivoEncontrado || archivoEntrada.empty()) {
         cerr << "ERROR: missing filename or -f option." << endl;
         cerr << "Usage: " << endl << " maze_bt [ -p] [ --p2D] -f file" << endl;
         return 1;
@@ -239,7 +237,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     mapa.assign(n, vector<int>(m));
-    visitado_grid.assign(n, vector<bool>(m, false));
+    visitadoGrid.assign(n, vector<bool>(m, false));
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
@@ -255,13 +253,13 @@ int main(int argc, char* argv[]) {
     auto chrono_start = chrono::high_resolution_clock::now();
 
     if (n > 0 && m > 0 && mapa[0][0] == 1) {
-        visitado_grid[0][0] = true;
+        visitadoGrid[0][0] = true;
         camino.push_back({0, 0});
         maze_bt({0, 0}, 1);
     } else {
         difMinima = INT_MAX;
         if (n > 0 && m > 0 && mapa[0][0] == 0) {
-            nvisit = 1; nexplored = 0; nleaf = 0; nunfeasible = 0; nnot_promising = 0;
+            nvisitados = 1; nExplorados = 0; nHoja = 0; notFeasible = 0; notPromising = 0;
         }
     }
 
@@ -276,18 +274,18 @@ int main(int argc, char* argv[]) {
     }
 
     if (n == 1 && m == 1 && mapa[0][0] == 1 && difMinima == 1) {
-        if (nvisit == 1 && nleaf == 1 && nexplored == 0) {
-            nexplored = 1;
+        if (nvisitados == 1 && nHoja == 1 && nExplorados == 0) {
+            nExplorados = 1;
         }
     }
 
-    cout << nvisit << " " << nexplored << " " << nleaf << " " << nunfeasible << " " << nnot_promising << endl;
+    cout << nvisitados << " " << nExplorados << " " << nHoja << " " << notFeasible << " " << notPromising << endl;
     cout << fixed << setprecision(3) << tiempo_ms << endl;
 
-    if (print_2D) {
+    if (print2D) {
         mostrarCamino();
     }
-    if (print_coded) {
+    if (printCoded) {
         mostrarCaminoCodificado();
     }
 
