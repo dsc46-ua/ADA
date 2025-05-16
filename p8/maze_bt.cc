@@ -91,9 +91,7 @@ void maze_bt(nodo nodoActual, int current_len) {
     //Iteración sobre las direcciones en el orden preferido
     for (StepEnum step_to_try : direcciones) { //iteramos sobre el orden que hemos elegido
         int incx, incy;
-        // Obtener incrementos del mapa original usando el StepEnum actual
-        // Usamos .at() para obtener el valor; esto lanzará una excepción si la clave no existe,
-        // lo cual puede ser útil para depurar si direcciones o steps_inc_map no están bien inicializados.
+        //Extreamos los valores de la tupla como se muestra en iteracio.cc
         tie(incx, incy) = steps_inc_map.at(step_to_try);
 
         int next_x = nodoActual.x + incx;
