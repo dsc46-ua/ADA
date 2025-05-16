@@ -10,41 +10,34 @@
 #include <cstring>
 #include <algorithm>
 #include <cstdlib>
-#include <map> // Necesario para std::map
+#include <map>
 
 using namespace std;
 
-// Estructura nodo como la usas en tus funciones de ejemplo
 struct nodo {
     int x, y;
 };
 
-// Tipo enumérico para las 8 direcciones posibles
-// Los valores deben coincidir con los usados en el mapa de pasos
+//Variable enum para direcciones
 enum StepEnum { N_enum = 1, NE_enum, E_enum, SE_enum, S_enum, SW_enum, W_enum, NW_enum };
-
-// Variables globales adaptadas a los nombres de tus funciones de ejemplo
-vector<vector<int>> mapa; // Laberinto original
-int n, m;                 // Dimensiones
-
-vector<nodo> camino;        // Camino actual en la recursión
-vector<nodo> mejorCamino;   // Mejor camino encontrado
-int difMinima = INT_MAX; // Longitud del mejor camino (equivalente a best_path_length)
-
-// Estadísticas del algoritmo (usando tus nombres)
+//Variables globales
+vector<vector<int>> mapa; 
+int n, m;                 
+vector<nodo> camino; //Camino actual
+vector<nodo> mejorCamino; //Mejor camino
+int difMinima = INT_MAX; //Valor incial de mejor camino
+//Estadísticas
 long long nvisit = 0;
 long long nexplored = 0;
 long long nleaf = 0;
 long long nunfeasible = 0;
 long long nnot_promising = 0;
 
-vector<vector<bool>> visitado_grid; // Rejilla para marcar celdas visitadas en el camino actual
-
-// Mapa para los movimientos, similar a iteracio.cc
-// Usaremos StepEnum como clave para que coincida con la definición de la práctica para la salida -p
+vector<vector<bool>> visitado_grid;
 map<StepEnum, tuple<int, int>> steps_inc_map;
+vector<StepEnum> direcciones; 
 
-void initialize_steps_map() {
+void mapaTuplas() {
     steps_inc_map[N_enum] = make_tuple(-1, 0);
     steps_inc_map[NE_enum] = make_tuple(-1, 1);
     steps_inc_map[E_enum] = make_tuple(0, 1);
@@ -55,53 +48,62 @@ void initialize_steps_map() {
     steps_inc_map[NW_enum] = make_tuple(-1, -1);
 }
 
-// Verifica si una posición es válida y accesible en 'mapa'
-bool is_valid_pos(int r, int c) {
+//Función para inicializar el orden de direcciones elegido
+void ordenDirecciones() {
+    direcciones = {
+        E_enum, SE_enum, S_enum, NE_enum, SW_enum, W_enum, NW_enum, N_enum
+    };
+}
+
+//Verifica si una posición es válida
+bool is_valid(int r, int c) {
     return (r >= 0 && r < n && c >= 0 && c < m && mapa[r][c] == 1);
 }
 
-// Verifica si hemos llegado al destino
-bool is_destination_pos(int r, int c) {
+//Verifica si hemos llegado al destino
+bool is_destination(int r, int c) {
     return (r == n - 1 && c == m - 1);
 }
 
-// Heuristic: Chebyshev distance to destination
-int chebyshev_distance_heuristic(int r1, int c1, int r2, int c2) {
+//Heurística de Chebyshev (usada en una practica de SI y mejora el rendimiento)
+int chebyshev(int r1, int c1, int r2, int c2) {
     return std::max(std::abs(r1 - r2), std::abs(c1 - c2));
 }
 
-// Función principal de backtracking (adaptada a tus nombres y estructuras)
-// 'current_len' es la longitud actual del 'camino' (número de nodos)
+//Función principal de backtracking
 void maze_bt(nodo nodoActual, int current_len) {
     nvisit++;
 
-    if (is_destination_pos(nodoActual.x, nodoActual.y)) {
+    if (is_destination(nodoActual.x, nodoActual.y)) {
         nleaf++;
         if (current_len < difMinima) {
             difMinima = current_len;
-            mejorCamino = camino; // 'camino' ya tiene el camino actual
+            mejorCamino = camino;
         }
         return;
     }
 
-    // Poda temprana: si el camino actual ya no puede mejorar la mejor solución
+    //Si el camino actual es mayor que la mejor solución encontrada, no seguimos
     if (current_len >= difMinima) {
         return;
     }
 
-    // Iteración sobre los elementos del mapa de movimientos
-    for (auto it = steps_inc_map.begin(); it != steps_inc_map.end(); ++it) {
+    //Iteración sobre las direcciones en el orden preferido
+    for (StepEnum step_to_try : direcciones) { //iteramos sobre el orden que hemos elegido
         int incx, incy;
-        tie(incx, incy) = it->second; // Obtener incrementos
+        // Obtener incrementos del mapa original usando el StepEnum actual
+        // Usamos .at() para obtener el valor; esto lanzará una excepción si la clave no existe,
+        // lo cual puede ser útil para depurar si direcciones o steps_inc_map no están bien inicializados.
+        tie(incx, incy) = steps_inc_map.at(step_to_try);
 
         int next_x = nodoActual.x + incx;
         int next_y = nodoActual.y + incy;
 
-        bool feasible = is_valid_pos(next_x, next_y) && !visitado_grid[next_x][next_y];
+        bool feasible = is_valid(next_x, next_y) && !visitado_grid[next_x][next_y];
 
         if (feasible) {
             int path_len_to_next_node = current_len + 1;
-            int heuristic_val = chebyshev_distance_heuristic(next_x, next_y, n - 1, m - 1);
+            int heuristic_val = chebyshev(next_x, next_y, n - 1, m - 1);
             bool promising = (path_len_to_next_node + heuristic_val) < difMinima;
 
             if (promising) {
@@ -123,35 +125,35 @@ void maze_bt(nodo nodoActual, int current_len) {
     }
 }
 
-// Funcion --P2D (adaptada para usar 'mapa' y 'mejorCamino')
+//Funcion --P2D
 void mostrarCamino() {
     if (difMinima == INT_MAX) {
         cout << "0" << endl;
         return;
     }
 
-    vector<vector<char>> path_display(n, vector<char>(m));
+    vector<vector<char>> vCamino(n, vector<char>(m));
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < m; ++j) {
-            path_display[i][j] = (mapa[i][j] == 1) ? '1' : '0';
+            vCamino[i][j] = (mapa[i][j] == 1) ? '1' : '0';
         }
     }
 
     for (const auto& node : mejorCamino) {
         if (node.x >= 0 && node.x < n && node.y >= 0 && node.y < m) {
-            path_display[node.x][node.y] = '*';
+            vCamino[node.x][node.y] = '*';
         }
     }
 
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < m; ++j) {
-            cout << path_display[i][j];
+            cout << vCamino[i][j];
         }
         cout << endl;
     }
 }
 
-// Funcion -p (camino codificado)
+//Funcion -p (camino codificado)
 void mostrarCaminoCodificado() {
     if (difMinima == INT_MAX) {
         cout << "<0>" << endl;
@@ -161,7 +163,7 @@ void mostrarCaminoCodificado() {
         cout << "<0>" << endl;
         return;
     }
-    if (mejorCamino.size() == 1 && difMinima == 1) {
+    if (mejorCamino.size() == 1 && difMinima == 1) { //Condición para el caso 0,0 a 0,0 en laberinto 1x1
         cout << "<>" << endl;
         return;
     }
@@ -171,14 +173,14 @@ void mostrarCaminoCodificado() {
         int dr = mejorCamino[i].x - mejorCamino[i - 1].x;
         int dc = mejorCamino[i].y - mejorCamino[i - 1].y;
 
-        if (dr == -1 && dc == 0) { codigo += '1'; } // N_enum
-        else if (dr == -1 && dc == 1) { codigo += '2'; } // NE_enum
-        else if (dr == 0 && dc == 1) { codigo += '3'; }  // E_enum
-        else if (dr == 1 && dc == 1) { codigo += '4'; }  // SE_enum
-        else if (dr == 1 && dc == 0) { codigo += '5'; }  // S_enum
-        else if (dr == 1 && dc == -1) { codigo += '6'; } // SW_enum
-        else if (dr == 0 && dc == -1) { codigo += '7'; } // W_enum
-        else if (dr == -1 && dc == -1) { codigo += '8'; } // NW_enum
+        if (dr == -1 && dc == 0) { codigo += '1'; } //N_enum
+        else if (dr == -1 && dc == 1) { codigo += '2'; } //NE_enum
+        else if (dr == 0 && dc == 1) { codigo += '3'; }  //E_enum
+        else if (dr == 1 && dc == 1) { codigo += '4'; }  //SE_enum
+        else if (dr == 1 && dc == 0) { codigo += '5'; }  //S_enum
+        else if (dr == 1 && dc == -1) { codigo += '6'; } //SW_enum
+        else if (dr == 0 && dc == -1) { codigo += '7'; } //W_enum
+        else if (dr == -1 && dc == -1) { codigo += '8'; } //NW_enum
     }
     codigo += ">";
     cout << codigo << endl;
@@ -186,7 +188,8 @@ void mostrarCaminoCodificado() {
 
 int main(int argc, char* argv[]) {
 
-    initialize_steps_map(); // Inicializar el mapa de movimientos
+    mapaTuplas(); //Inicializamos el mapa de tuplas
+    ordenDirecciones(); //Incializamos el orden de direcciones
 
     if (argc < 3) {
         cerr << "ERROR: missing filename." << endl;
@@ -259,7 +262,7 @@ int main(int argc, char* argv[]) {
         maze_bt({0, 0}, 1);
     } else {
         difMinima = INT_MAX;
-        if (n > 0 && m > 0 && mapa[0][0] == 0) { // Inicio bloqueado
+        if (n > 0 && m > 0 && mapa[0][0] == 0) {
             nvisit = 1; nexplored = 0; nleaf = 0; nunfeasible = 0; nnot_promising = 0;
         }
     }
