@@ -151,7 +151,7 @@ void mostrarCamino() {
     }
 }
 
-// Funcion -p (camino codificado) - Usando tu lógica
+// Funcion -p (camino codificado)
 void mostrarCaminoCodificado() {
     if (difMinima == INT_MAX) {
         cout << "<0>" << endl;
