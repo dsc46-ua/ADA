@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <map>
+#include <cmath> // Necesario para sqrt
 using namespace std;
 
 struct nodo {
@@ -63,9 +64,18 @@ bool isDestination(int r, int c) {
     return (r == n - 1 && c == m - 1);
 }
 
-//Heurística de Chebyshev (usada en una practica de SI y mejora el rendimiento)
+//HEURÍSTICAS (tras probar las 3 la que mnejor resultado es la de Chebyshev)
+//Heurística de Chebyshev 
 int chebyshev(int r1, int c1, int r2, int c2) {
     return max(abs(r1 - r2), abs(c1 - c2));
+}
+//Heurística de Manhattan
+int manhattan(int r1, int c1, int r2, int c2) {
+    return abs(r1 - r2) + abs(c1 - c2);
+}
+//Heurística Euclidiana
+int euclidean(int r1, int c1, int r2, int c2) {
+    return static_cast<int>(sqrt(pow(r1 - r2, 2) + pow(c1 - c2, 2)));
 }
 
 //Función principal de backtracking
