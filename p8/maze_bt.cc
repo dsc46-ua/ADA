@@ -67,7 +67,7 @@ bool is_destination(int r, int c) {
 
 //Heurística de Chebyshev (usada en una practica de SI y mejora el rendimiento)
 int chebyshev(int r1, int c1, int r2, int c2) {
-    return std::max(std::abs(r1 - r2), std::abs(c1 - c2));
+    return max(abs(r1 - r2), abs(c1 - c2));
 }
 
 //Función principal de backtracking
