@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <map>
-#include <cmath> // Necesario para sqrt
+#include <cmath>
 using namespace std;
 
 struct nodo {
