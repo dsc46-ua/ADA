@@ -49,7 +49,7 @@ void mapaTuplas() {
 //Función para inicializar el orden de direcciones elegido
 void ordenDirecciones() {
     direcciones = {
-        E_enum, SE_enum, S_enum, NE_enum, SW_enum, W_enum, NW_enum, N_enum
+        SE_enum, E_enum, S_enum, NE_enum, SW_enum, W_enum, NW_enum, N_enum
     };
 }
 
