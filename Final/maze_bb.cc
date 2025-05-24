@@ -26,15 +26,16 @@ vector<nodo> camino; //Camino actual
 vector<nodo> mejorCamino; //Mejor camino
 int difMinima = INT_MAX; //Valor incial de mejor camino
 //Estadísticas
-long long nvisitados = 0; // nvisit
-long long nExplorados = 0; // nexplored
-long long nHoja = 0; // nleaf
-long long notFeasible = 0; // nunfeasible
-long long notPromising = 0; // nnot-promising
-// Variables adicionales para completar los 8 valores estadísticos requeridos
-long long nPodados = 0;    // Nodos podados por cota directa
-long long nTotalMov = 0;   // Total de movimientos intentados
-long long maxProf = 0;     // Profundidad máxima alcanzada
+long long nvisitados = 0;
+long long nExplorados = 0;
+long long nHoja = 0;
+long long notFeasible = 0;
+long long notPromising = 0; 
+
+//Variables adicionales para completar los 8 valores estadísticos requeridos
+long long nPodados = 0;    //Nodos podados
+long long nTotalMov = 0;   //Movimientos intentados
+long long maxProf = 0;     //Profundidad
 
 vector<vector<bool>> visitadoGrid;
 map<StepEnum, tuple<int, int>> steps_inc_map;
@@ -85,7 +86,7 @@ int euclidean(int r1, int c1, int r2, int c2) {
 //Función principal de ramificación y poda
 void maze_bb(nodo nActual, int actual) {
     nvisitados++;
-    maxProf = max(maxProf, (long long)actual); // Actualizar profundidad máxima
+    maxProf = max(maxProf, (long long)actual); //Actualizamos la profundidad máxima
 
     if (isDestination(nActual.x, nActual.y)) {
         nHoja++;
@@ -98,13 +99,13 @@ void maze_bb(nodo nActual, int actual) {
 
     //Si el camino actual es mayor que la mejor solución encontrada, no seguimos
     if (actual >= difMinima) {
-        nPodados++; // Contador de nodos podados por cota directa
+        nPodados++; 
         return;
     }
 
     //Iteración sobre las direcciones en el orden preferido
     for (StepEnum step_to_try : direcciones) {
-        nTotalMov++; // Incrementar total de movimientos intentados
+        nTotalMov++; //Aumentamos total de movimientos intentados
         
         int incx, incy;
         tie(incx, incy) = steps_inc_map.at(step_to_try);
@@ -175,8 +176,8 @@ void mostrarCaminoCodificado() {
     if (mejorCamino.empty()) {
         cout << "<0>" << endl;
         return;
-    }
-    if (mejorCamino.size() == 1 && difMinima == 1) { //Condición para el caso 0,0 a 0,0 en laberinto 1x1
+    }//Condición para el caso 0,0 a 0,0 en laberinto 1x1
+    if (mejorCamino.size() == 1 && difMinima == 1) { 
         cout << "<>" << endl;
         return;
     }
@@ -275,14 +276,15 @@ int main(int argc, char* argv[]) {
         maze_bb({0, 0}, 1); // Call maze_bb
     } else {
         difMinima = INT_MAX;
-        // Ensure stats are initialized if maze is unsolvable from start or invalid
-        if (n > 0 && m > 0 && mapa[0][0] == 0) { // Start is a wall
-             // According to nvisit definition, even considering (0,0) should count as one visit.
+        //Stats iniciales
+        if (n > 0 && m > 0 && mapa[0][0] == 0) {
+            //REVISAR SI SALE ASI EN LAS SOLUCIONES
+            //Contamos uno visitado hasta en caso de que sea un laberinto 0x0
             nvisitados = 1; 
-            notFeasible = 1; // (0,0) is not feasible
+            notFeasible = 1;
             nExplorados = 0; nHoja = 0; notPromising = 0; 
             nPodados = 0; nTotalMov = 0; maxProf = 0;
-        } else if (n <=0 || m <=0) { // Invalid dimensions, no real processing occurs
+        } else if (n <=0 || m <=0) { //Dimensiones erroneas
             nvisitados = 0; nExplorados = 0; nHoja = 0; notFeasible = 0; notPromising = 0;
             nPodados = 0; nTotalMov = 0; maxProf = 0;
         }
@@ -298,18 +300,16 @@ int main(int argc, char* argv[]) {
         cout << difMinima << endl;
     }
     
-    // Special handling for 1x1 maze
+    //Laberitno 1x1
     if (n == 1 && m == 1 && mapa[0][0] == 1 && difMinima == 1) {
         if (nvisitados == 1 && nHoja == 1 && nExplorados == 0) {
             nExplorados = 1; 
         }
     }
     
-    // Output all 8 statistics values
     cout << nvisitados << " " << nExplorados << " " << nHoja << " " 
          << notFeasible << " " << notPromising << " " 
          << nPodados << " " << nTotalMov << " " << maxProf << endl;
-    
     cout << fixed << setprecision(3) << tiempo_ms << endl;
 
     if (print2D) {
